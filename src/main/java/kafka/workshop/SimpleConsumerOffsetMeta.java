@@ -26,7 +26,7 @@ public class SimpleConsumerOffsetMeta {
 
         // Consumer group id, should be unique, partition allocated to consumers inside teh group
         // consumer group id present, when we restart the program, it will continue from where it left
-        props.put(GROUP_ID_CONFIG, "greetings-consumer-group"); // offset, etc, TODO
+        props.put(GROUP_ID_CONFIG, "rebalance-consumer"); // offset, etc, TODO
 
         // ENABLE_AUTO_COMMIT_CONFIG = true, after receiving message, automatically commit the offset
             // Pros: simple, not recommended
@@ -74,8 +74,6 @@ public class SimpleConsumerOffsetMeta {
             OffsetAndMetadata offetMeta = consumer.committed(topicPartition);
             System.out.println("Commited offset " + offetMeta);
 
-            // demonstrated in rebalanced consumer, differ few minutes
-            // consumer.seek(topicPartition, 0);
 
         }
 

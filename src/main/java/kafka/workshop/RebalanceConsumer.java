@@ -23,7 +23,7 @@ import static java.util.Collections.singletonList;
 // Auto commit disabled
 public class RebalanceConsumer {
 
-    public static String TOPIC = "texts";
+    public static String TOPIC = "messages";
 
     public static void main(String[] args) {
         Properties props = new Properties();
@@ -47,15 +47,39 @@ public class RebalanceConsumer {
         }
 
 
-        // Subscribe for topic(s)
+        // Subscribe for topic(s), assign callback
+        // RebalanceCallback is called whenever the paritiion is assigned or revoked from this consumer
         consumer.subscribe(singletonList(TOPIC), new ConsumerRebalanceListener() {
+
+
+            // called whenever assignd  partition revoked
             public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
                 System.out.printf("%s topic-partitions are revoked from this consumer\n", Arrays.toString(partitions.toArray()));
             }
 
+            // called whenever new partition assigned
             public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
                 System.out.printf("%s topic-partitions are assigned to this consumer\n", Arrays.toString(partitions.toArray()));
 
+                // demo code to reset the offset
+                Iterator<TopicPartition> topicPartitionIterator = partitions.iterator();
+                while(topicPartitionIterator.hasNext()) {
+                    TopicPartition topicPartition = topicPartitionIterator.next();
+                    System.out.println("Current position is " +
+                            consumer.position(topicPartition) +
+                            " committed  is ->" +
+                            consumer.committed(topicPartition) );
+
+                    // to change offset
+                    // consumer.seek(topicPartition, 100);
+                    // reset to 0
+                    // consumer.seekToBeginning(Arrays.asList(topicPartition));
+
+                    // seek to end
+                    // consumer.seekToEnd(Arrays.asList(topicPartition));
+                }
+
+                /*
                 String POSITION = "lastCommitted"; // offset | begin | end | lastCommitted
 
                 Iterator<TopicPartition> topicPartitionIterator = partitions.iterator();
@@ -96,7 +120,8 @@ public class RebalanceConsumer {
                         consumer.seek(topicPartition, offetMeta.offset());
 
                     }
-                }
+                } */
+
             }
         });
 
