@@ -59,6 +59,7 @@ public class OrderPartitioner implements Partitioner {
             return 0;
         }
 
+        // decide partition based on key
         String country = (String) key;
 
         if (country.equals(("IN"))) {
@@ -69,17 +70,20 @@ public class OrderPartitioner implements Partitioner {
             partition = 2;
         }
 
-
-
         // OR
+        // decide parition using value (Order type)
 
-        // Find the id of current user based on the username
-//        //Integer orderId = orderService.findUserId(userName);
-//        Integer userId = random.nextInt(5);
-//        // If the userId not found, default partition is 0
-//        if (userId != null) {
-//            partition = userId;
-//        }
+        /*
+        Order order = (Order) value;
+
+        if (order.country.equals(("IN"))) {
+            partition = 0;
+        } else if (order.country.equals(("USA"))) {
+            partition =  1;
+        } else {
+            partition = 2;
+        }
+        */
 
 
         // Other option, use murmur2 algorithm

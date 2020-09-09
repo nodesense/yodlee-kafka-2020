@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.io.IOException;
 
+// POJO class
 public class Order {
     public String orderId;
     public Double amount;

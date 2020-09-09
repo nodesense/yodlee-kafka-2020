@@ -37,9 +37,9 @@ public class OrderDeserializer implements Deserializer<Order> {
         tClass = (Class<Order>) props.get(VALUE_DESERIALIZER_CLASS_CONFIG);
     }
 
-    // invoked autoamtically by consumer during consumer.poll()
+    // invoked automatically by consumer during consumer.poll()
     // kafka consumer client will get bytes from broker
-    // invoke deserialize passing bytes as input
+    // invoke deserialize by passing bytes as input
     // deserialize converts bytes to Java Object [JSON to Object]
     @Override
     public Order deserialize(String topic, byte[] bytes) {
@@ -72,6 +72,7 @@ public class OrderDeserializer implements Deserializer<Order> {
         return order;
     }
 
+    // consumer.close() will invoke this
     @Override
     public void close() {
 

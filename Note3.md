@@ -67,3 +67,15 @@ Consumer offset:
   6. Every consumer group for each topic shall have its own offset
   
   
+ JSON - Order/POJO
+ 
+ Custom Serializer - Convert the POJO to JSON string to byte array 
+ Custom Deserializer, receive byte array, convert JSON then to POJO
+ 
+ Custom Partitioner 
+ 
+ 
+ Starting a new consumer,
+  the offset always set to latest
+  then onwards, it follows the consumer offset settings
+  

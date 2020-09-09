@@ -25,6 +25,7 @@ public class OrderSerializer<T> implements Serializer<T> {
     // called one time by the Producer to initialize your serializer
     @Override
     public void configure(Map<String, ?> props, boolean isKey) {
+        System.out.println("OrderSerializer configure" + props);
     }
 
     // invoked when producer.send(order)
@@ -40,7 +41,7 @@ public class OrderSerializer<T> implements Serializer<T> {
             // convert order to bytes // JS JSON.stringfy().toBytes()
             byte[] bytes = objectMapper.writeValueAsBytes(order);
             System.out.println("Bytes " + bytes);
-
+            // print bytes as string format
             System.out.println("Bytes string " +  new String(bytes, StandardCharsets.UTF_8));
             return bytes;
 
@@ -52,5 +53,6 @@ public class OrderSerializer<T> implements Serializer<T> {
     // is invoked by the producer when producer.close is called, basically to clean up the resources
     @Override
     public void close() {
+        System.out.println("OrderSerializer close" );
     }
 }

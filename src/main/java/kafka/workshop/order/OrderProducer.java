@@ -13,7 +13,8 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 
-// kafka-topics --zookeeper k5.nodesense.ai:2181 --create --topic orders --replication-factor 1 --partitions 3
+// kafka-topics --zookeeper k17.training.sh:2181 --create --topic orders --replication-factor 1 --partitions 3
+//     kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic orders --from-beginning
 
 public class OrderProducer {
 
@@ -45,9 +46,12 @@ public class OrderProducer {
         props.put(LINGER_MS_CONFIG, 100);
         props.put(BUFFER_MEMORY_CONFIG, 33554432);
 
+        // String Serilizer for key
         props.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        // Custom Serializer
         props.put(VALUE_SERIALIZER_CLASS_CONFIG, OrderSerializer.class);
 
+        // override default partitioner (Hash partitioner)
         //props.put("partitioner.class", "kafka.workshop.order.OrderPartitioner");
         props.put("partitioner.class", OrderPartitioner.class);
 
@@ -60,21 +64,23 @@ public class OrderProducer {
 
         int counter = 10;
         for (int i = 0 ; i < 10 ;i++) {
+            // generate random order
             Order order = nextOrder();
             // producer record, topic, key (null), value (message)
             // send message, not waiting for ack
 
+            // country code as key
             String key = order.country;
 
             ProducerRecord<String, Order> record = new ProducerRecord<>(TOPIC, key, order);
             System.out.println("Sending " + order.orderId);
 
-            // produer.send will invoke serialize method internally
+            // producer.send will invoke serialize method internally
             // pass topic name and order object parameter
             // serialize will return bytes as output
-            // producer shall call custom partitioner's partition method to know the partition
+            // producer shall call custom/default partitioner's partition method to know the partition
             // bytes shall be send to broker
-            producer.send(record);
+            producer.send(record).get();
 
             System.out.printf("order send %s sent\n", record);
             Thread.sleep(5000); // Demo only,

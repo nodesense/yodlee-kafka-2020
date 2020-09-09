@@ -50,7 +50,7 @@ public class OrderConsumer {
             // poll method get bytes from Kafka broker
             // poll method shall invoke deserialize method internally
             // that converts bytes to Java Object [Order]
-            // return order object as output
+            // return order object/POJO as output
             ConsumerRecords<String, Order> records = consumer.poll(ofSeconds(1));
             // if no messages
             if (records.count() == 0)
@@ -72,7 +72,6 @@ public class OrderConsumer {
             }
 
             consumer.commitSync();
-
         }
     }
 }
