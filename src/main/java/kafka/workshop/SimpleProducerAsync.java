@@ -3,10 +3,7 @@ package kafka.workshop;
 // SimpleProducer.java
 // kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic messages  --from-beginning --property print.key=true --property print.timestamp=true
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 
 import java.util.Properties;
 
@@ -15,8 +12,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 // kafka-topics --create --zookeeper k17.training.sh:2181 --replication-factor 1 --partitions 3 --topic messages
 
 
-
-public class SimpleProducer {
+public class SimpleProducerAsync {
 
     public static String TOPIC = "messages";
 
@@ -245,10 +241,22 @@ public class SimpleProducer {
                 // .send() basically uses separate worker thread to send message to broker
                 // .send() ensure that it decides the partition before sending message using partitioner class
                 // try/catch if the writing to producer fails
-                RecordMetadata metadata = (RecordMetadata) producer.send(record).get(); // sync, blocking
+                // async, non-blocking calls, callback to get ack, exception
+                producer.send(record, new Callback() {
+                    @Override
+                    public void onCompletion(RecordMetadata metadata, Exception e) {
+                        if (e == null) {
+                            // no error
+                            System.out.println("Async Callback Ack offset " + metadata.offset() + " partition " + metadata.partition());
+                        } else {
+                            // handle the exception
+                            System.out.println("Exception while sending data");
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
-                System.out.printf("Greeting %d - %s sent\n", counter, message);
-                System.out.println("Ack offset " + metadata.offset() + " partition " + metadata.partition());
+                System.out.printf("Greeting %d - %s sent async\n", counter, message);
 
                 Thread.sleep(5000); // Demo only,
                 counter++;
