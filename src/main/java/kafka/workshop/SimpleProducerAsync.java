@@ -169,7 +169,7 @@ public class SimpleProducerAsync {
 
         // acks all
             //   Producer send message to broker
-            // Broker receive the message, message written to disk, broker ensure that all replicas updated
+            // Broker receive the message, message written to disk, broker ensure that all in-sync replicas updated
             // then Broker acks to producer that message received
             // Pros, Persisted in all replicas
             // Cons, slow due to all system disk/io operation

@@ -17,7 +17,7 @@ import java.util.UUID;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
 public class SimpleConsumer {
-    public static String TOPIC = "greetings";
+    public static String TOPIC = "messages";
 
     public static void main(String[] args) throws Exception {
         Properties props = new Properties();
@@ -25,23 +25,26 @@ public class SimpleConsumer {
         props.put(BOOTSTRAP_SERVERS_CONFIG, Settings.BOOTSTRAP_SERVERS);
 
         // Consumer group id, should be unique, partition allocated to consumers inside teh group
+        // consumer group id present, when we restart the program, it will continue from where it left
         props.put(GROUP_ID_CONFIG, "greetings-consumer-group"); // offset, etc, TODO
 
         // -- true, automatically commit the offset, automatically
         // -- false, developers manually commit the offset
         props.put(ENABLE_AUTO_COMMIT_CONFIG, "false");
         props.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-
         props.put(SESSION_TIMEOUT_MS_CONFIG, "30000");
 
-        // key deserialize the bytes data into String format, JSON,AVRO formats
+        // Consumer receives the message, which contains bytes for key and value
+        // convert the bytes to meaniningful domain object, POJO, JSON, string, long etc
+        // Deserialization [bytes to other domain types]
+
+        // key deserialize the bytes data into String,  [Long format, JSON,AVRO formats discussed later]
         props.put(KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
-        // value deserialize the bytes data into String format, JSON,AVRO formats
-
+        // value deserialize the bytes data into String format, [JSON,AVRO formats]
         props.put(VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
-        // discussed later
+        // discussed later, if you always wants read from begining
        //  props.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());
        // props.put(ConsumerConfig.CLIENT_ID_CONFIG, "your_client_id");
        // props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
