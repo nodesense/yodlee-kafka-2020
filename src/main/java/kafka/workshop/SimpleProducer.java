@@ -1,7 +1,7 @@
 package kafka.workshop;
 
 // SimpleProducer.java
-// kafka-console-consumer --bootstrap-server localhost:9092 --topic greetings  --from-beginning --property print.key=true --property print.timestamp=true
+// kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic messages  --from-beginning --property print.key=true --property print.timestamp=true
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -12,13 +12,13 @@ import java.util.Properties;
 
 import static org.apache.kafka.clients.producer.ProducerConfig.*;
 
-// kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic messages
+// kafka-topics --create --zookeeper k17.training.sh:2181 --replication-factor 1 --partitions 3 --topic messages
 
 
 
 public class SimpleProducer {
 
-    public static String TOPIC = "greetings";
+    public static String TOPIC = "messages";
 
 
     public static String[] greetingMessages = new String[] {
@@ -148,7 +148,6 @@ public class SimpleProducer {
             "Happy Diwali",
             "Happy New Year",
             "Wish you a merry Christmas",
-
     };
 
 
@@ -170,14 +169,17 @@ public class SimpleProducer {
         // Reserved memory, pre-alloted in bytes
         props.put(BUFFER_MEMORY_CONFIG, 33554432);
 
-        // Key/Value
-        // Key is string, converted to byte array [serialized data]
-        // Value is string, converted to byte array [serialized data]
+        // Message => Key/Value, key/value any type, string,long, boolean, POJO object
+        // Kafka accept only bytes for key/value, key is optional, means can be null
+
+        // in this example,
+        // Key is a string, producer should convert
+                // string to byte array [serialized data] before sending to kafka
+
+        // Value is string, producer should converte to byte array [serialized data]
+        // StringSerializer accept string as input, produce byte array of that string
         props.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-
-        // props.put("partitioner.class", CustomPartitioner.class);
-
 
         System.out.println("PRoducer Setup ");
         // Key as string, value as string
@@ -189,16 +191,32 @@ public class SimpleProducer {
             for (String message:greetingMessages) {
                 // producer record, topic, key (null), value (message)
                 // send message, not waiting for ack
+                // Key shall be Message0, Message1, Message2, .... so on
                 String key = "Message" + counter ;
+                // Value Message0 Good Morning
                 String value = counter + " " + message;
+
+                //record is a message to kafka
                 ProducerRecord record = new ProducerRecord<>(TOPIC, key, value);
-                // producer.send(record); // async, non-blocking
+
+                // sending message to broker,
+                    // 1. sync, blocking call, send message, wait for ack from broker, then proceed
+                    // 2. async, send message in async way, doens't wait for broker response,
+                    // ack received in callback
+
+
+                // Send message using sync way
+                // producer send the record to a topic
+                // waiting for producer response, RecordMetadata
+                // meta shall have offset, timestamp, other information
+                // .send() basically uses separate worker thread to send message to broker
+                // .send() ensure that it decides the partition before sending message using partitioner class
                 RecordMetadata metadata = (RecordMetadata) producer.send(record).get(); // sync, blocking
 
                 System.out.printf("Greeting %d - %s sent\n", counter, message);
                 System.out.println("Ack offset " + metadata.offset() + " partition " + metadata.partition());
 
-                Thread.sleep(100); // Demo only,
+                Thread.sleep(5000); // Demo only,
                 counter++;
             }
         }
