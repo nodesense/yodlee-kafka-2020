@@ -2,21 +2,21 @@
 package kafka.workshop;
 
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
-public class SimpleConsumer {
+public class SimpleConsumerOffsetMeta {
     public static String TOPIC = "messages";
 
     public static void main(String[] args) throws Exception {
@@ -68,38 +68,15 @@ public class SimpleConsumer {
         for (PartitionInfo partitionInfo: partitions) {
             // partitionInfo.
             System.out.println("Partition " + partitionInfo);
-        }
 
-        while (true) {
-            // Consumer poll/read/pull the data with wait time
-            // poll for msgs for 1 second, any messges within second, group together
-            // if no msg, exit in 1 second, records length is 0
+            TopicPartition topicPartition = new TopicPartition(TOPIC, partitionInfo.partition());
+            // what is the commited offset
+            OffsetAndMetadata offetMeta = consumer.committed(topicPartition);
+            System.out.println("Commited offset " + offetMeta);
 
-            // data is already deserialized into string by the poll method
-            // key/value is in domain model key: string, value: string
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+            // demonstrated in rebalanced consumer, differ few minutes
+            // consumer.seek(topicPartition, 0);
 
-            if (records.count() == 0)
-                continue; // wait for more msg
-
-
-            // Iterate record and print the record
-            for (ConsumerRecord<String, String> record: records) {
-
-                System.out.printf("partition=%d, offset=%d\n", record.partition(),
-                        record.offset());
-
-                System.out.printf("key=%s, value=%s\n", record.key(), record.value());
-
-
-                // discuss post break
-                // manual commit if ENABLE_AUTO_COMMIT_CONFIG is "false"
-                // technically consumer send a message to broker about commited offset against consumer group
-               consumer.commitSync();
-               // Thread.sleep(3000);
-            }
-
-            // Thread.sleep(2000);
         }
 
     }
