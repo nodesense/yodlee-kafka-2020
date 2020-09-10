@@ -16,6 +16,7 @@ import java.util.*;
 
 // kafka-topics --zookeeper k17.training.sh:2181 --create --topic words-count-output --replication-factor 1 --partitions 3
 
+// kafka-topics --zookeeper k17.training.sh:2181 --create --topic words-count-windowed-output --replication-factor 1 --partitions 3
 
 // producer
 
@@ -27,7 +28,7 @@ import java.util.*;
 // kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic words-count-output --from-beginning --property print.key=true  --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
 
 
-   //     kafka-console-consumer --bootstrap-server k5.nodesense.ai:9092 --topic words-count-windowed-output --from-beginning --property print.key=true  --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+   //     kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic words-count-windowed-output --from-beginning --property print.key=true  --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
 
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -65,7 +66,6 @@ public class WordCountStream {
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, Settings.BOOTSTRAP_SERVERS);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-
 
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1 * 1000);
         props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
@@ -155,6 +155,37 @@ public class WordCountStream {
         wordCountStream.to("words-count-output", Produced.with(stringSerde, longSerde));
 
         // done building topology
+
+
+
+          splitWords
+                .groupBy((_$, word) -> word)
+                .windowedBy(TimeWindows.of(Duration.ofSeconds(120)))
+                .count()
+                .toStream()
+                .foreach((windowedWord, count) -> {
+                        System.out.println();
+                        System.out.print("Window ");
+                        System.out.print(" Start " + windowedWord.window().start());
+                        System.out.print(" End " + windowedWord.window().end());
+                        System.out.println("   word  " + windowedWord.key() + " Count  " + count);
+                });
+
+        KStream<String, Long> windowedCount = splitWords
+                .groupBy((_$, word) -> word)
+                .windowedBy(TimeWindows.of(Duration.ofSeconds(120)))
+                .count()
+                .toStream()
+                .map((windowedKey, value) -> new KeyValue<>(windowedKey.key(), value));
+
+                 windowedCount
+                .foreach((word, count) -> {
+                    System.out.println();
+                    System.out.print("Window ");
+                    System.out.println("   word  " + word + " Count  " + count);
+                });
+
+        windowedCount.to("words-count-windowed-output", Produced.with(stringSerde, longSerde));
 
 
         // create instance
