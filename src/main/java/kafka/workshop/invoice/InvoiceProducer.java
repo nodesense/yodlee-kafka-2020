@@ -14,7 +14,14 @@ package kafka.workshop.invoice;
     import java.util.Random;
 //
 
-// kafka-topics --zookeeper k5.nodesense.ai:2181 --create --topic invoices --replication-factor 1 --partitions 3
+// kafka-topics --zookeeper k17.training.sh:2181 --create --topic invoices --replication-factor 1 --partitions 3
+// kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic invoices  --from-beginning --property print.key=true
+
+
+// kafka-avro-console-consumer --bootstrap-server k17.training.sh:9092 --topic invoices --from-beginning --property print.key=true --property schema.registry.url="http://k17.training.sh:8081"
+
+
+
 
 public class InvoiceProducer {
 

@@ -15,9 +15,12 @@ import java.util.Collections;
 import java.util.Map;
 
 
-// kafka-topics --zookeeper localhost:2181 --create --topic statewise-invoices-count --replication-factor 1 --partitions 1
+// kafka-topics --zookeeper k17.training.sh:2181 --create --topic statewise-amount --replication-factor 1 --partitions 1
+// kafka-topics --zookeeper k17.training.sh:2181 --create --topic statewise-invoices-count --replication-factor 1 --partitions 1
 
-// kafka-console-consumer --bootstrap-server localhost:9092 --topic statewise-invoices-count --from-beginning --property print.key=true --property print.value=true --formatter kafka.tools.DefaultMessageFormatter --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+// kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic statewise-invoices-count --from-beginning --property print.key=true --property print.value=true --formatter kafka.tools.DefaultMessageFormatter --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+// kafka-console-consumer --bootstrap-server k17.training.sh:9092 --topic statewise-amount --from-beginning --property print.key=true --property print.value=true --formatter kafka.tools.DefaultMessageFormatter --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+
 
 import java.util.Properties;
 
@@ -29,14 +32,14 @@ public class InvoiceStream {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "product-invoice-stream");
         props.put(StreamsConfig.CLIENT_ID_CONFIG, "product-invoice-stream-client");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, Settings.BOOTSTRAP_SERVERS);
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
 
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
 
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1 * 1000);
         props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
 
-        props.put("schema.registry.url", Settings.BOOTSTRAP_SERVERS);
+        props.put("schema.registry.url", Settings.SCHEMA_REGISTRY);
 
         // Custom Serializer if we have avro schema InvoiceAvroSerde
         final Serde<Invoice> InvoiceAvroSerde = new SpecificAvroSerde<>();
@@ -68,18 +71,22 @@ public class InvoiceStream {
 
         // KEY, VALUE, table used for aggregation
         // State name, count
+        // number of orders placed by each state
         KTable<String, Long> stateGroupCount = stateGroupStream
                 .count(); // numebr of orders by state
 
-                 // Set key to title and value to ticket value
+        // calculate amount spend by region/state
         invoiceStream
+                // ensure that state is used as key for upcoming processor
                 .map((k, v) -> new KeyValue<>(v.getState().toString(), (long) v.getAmount()))
                 // Group by title
                 .groupByKey(Grouped.with(Serdes.String(), Serdes.Long()))
                 // Apply SUM aggregation
                 .reduce(Long::sum)
+                // convert ktable to kstream
+                .toStream()
                 // Write to stream specified by outputTopic
-                .toStream().to("statewise-amount", Produced.with(Serdes.String(), Serdes.Long()));
+                .to("statewise-amount", Produced.with(Serdes.String(), Serdes.Long()));
 
         /// filter
         KStream<String, Invoice> invoiceQtyGt3Stream = invoiceStream
