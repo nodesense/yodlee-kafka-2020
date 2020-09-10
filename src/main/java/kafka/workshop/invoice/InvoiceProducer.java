@@ -2,6 +2,7 @@ package kafka.workshop.invoice;
 
 
     import kafka.workshop.Settings;
+    import kafka.workshop.models.Invoice;
     import org.apache.kafka.clients.producer.KafkaProducer;
     import org.apache.kafka.clients.producer.Producer;
     import org.apache.kafka.clients.producer.ProducerRecord;

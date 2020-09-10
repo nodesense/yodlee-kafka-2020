@@ -1,6 +1,7 @@
 package kafka.workshop.invoice;
 
 import kafka.workshop.Settings;
+import kafka.workshop.models.Invoice;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.specific.SpecificData;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -63,6 +64,7 @@ public class InvoiceConsumer {
 
 
                 GenericRecord genericRecord = record.value();
+
 
                 Invoice invoice = (Invoice) SpecificData.get().deepCopy(Invoice.SCHEMA$, genericRecord);
 
