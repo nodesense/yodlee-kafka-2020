@@ -35,3 +35,10 @@ AVRO
     
     shall consume 2.8 GB for 100 million records
      
+     
+     
+curl -X DELETE http://k17.training.sh:8081/subjects/invoices-key/versions/1
+curl -X DELETE http://k17.training.sh:8081/subjects/invoices-value/versions/1
+
+
+11:10 AM
