@@ -2,7 +2,6 @@ package kafka.workshop.invoice;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import kafka.workshop.Settings;
-import kafka.workshop.models.Invoice;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
