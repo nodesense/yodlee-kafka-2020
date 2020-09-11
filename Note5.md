@@ -7,26 +7,7 @@ confluent local status connectors
 File Connector, File Source connector
     input file, read from teh file stocks.csv, watch the file change,
     publish to kafka topic called stocks
-
-```
-
-touch file-source.properties
-
-nano file-source.properties
-
-```
-
-paste the content to the file
-
-```
-name=stock-file-source
-connector.class=FileStreamSource
-tasks.max=1
-file=/root/stocks.csv
-topic=stocks
-```
-
-
+ 
 Create the file 
 
 
@@ -44,8 +25,9 @@ confluent local load stock-file-source -d file-source.properties
 
 ```
 
-> touch stock-file-source.json
-> nano stock-file-source.json
+touch stock-file-source.json
+
+nano stock-file-source.json
 
 and below content 
 
