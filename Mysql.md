@@ -61,25 +61,26 @@ nano  mysql-product-source.json
 ```   
    paste below
 ```
-   
+
    {
    "name": "mysql-product-source",
    "config": {
      "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
      "key.converter": "io.confluent.connect.avro.AvroConverter",
-     "key.converter.schema.registry.url": "http://k5.nodesense.ai:8081",
+     "key.converter.schema.registry.url": "http://k17.training.sh:8081",
      "value.converter": "io.confluent.connect.avro.AvroConverter",
-     "value.converter.schema.registry.url": "http://k5.nodesense.ai:8081",
+     "value.converter.schema.registry.url": "http://k17.training.sh:8081",
      "connection.url": "jdbc:mysql://localhost:3306/ecommerce?user=team&password=team1234",
      "_comment": "Which table(s) to include",
      "table.whitelist": "products",
      "mode": "timestamp",
       "timestamp.column.name": "update_ts",
      "validate.non.null": "false",
-     "_comment": "The Kafka topic will be made up of this prefix, plus the table name  ",
+     "_comment": "The Kafka topic will be made up of this prefix, plus the table name, kafka topic shall be db_products  ",
      "topic.prefix": "db_"
    }
- }
+ }   
+
 ``` 
  
 ### END PROPERTY JSON CONFIGURATION
