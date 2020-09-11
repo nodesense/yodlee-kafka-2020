@@ -67,7 +67,7 @@ CREATE STREAM users_male AS SELECT userid AS userid, regionid FROM users_stream 
 
  CREATE STREAM pageviews_stream (userid varchar, pageid varchar) WITH (kafka_topic='pageviews', value_format='AVRO');
  
- select * from pageviews_stream;
+ select * from pageviews_stream emit changes;
 
 ```
 JOIN
@@ -75,7 +75,7 @@ JOIN
 ```
 CREATE STREAM user_pageviews_enriched_stream AS SELECT users_stream.userid AS userid, pageid, regionid, gender FROM pageviews_stream LEFT JOIN users_stream WITHIN 1 HOURS ON pageviews_stream.userid = users_stream.userid;
 
-select * from user_pageviews_enriched_stream;
+select * from user_pageviews_enriched_stream emit changes;
 
 ```
 Ctrl +C to exit
@@ -83,7 +83,7 @@ Ctrl +C to exit
 ```
 CREATE TABLE pageviews_region_table WITH (VALUE_FORMAT='AVRO') AS SELECT gender, regionid, COUNT() AS numusers FROM user_pageviews_enriched_stream WINDOW TUMBLING (size 60 second) GROUP BY gender, regionid HAVING COUNT() >= 1;
 
-select * from pageviews_region_table;
+select * from pageviews_region_table emit changes;
 
 ```
 
@@ -123,10 +123,10 @@ DROP TABLE  pageviews_region;
  ```
 CREATE STREAM invoices_stream (id varchar, qty int, amount int, customerId varchar, state varchar, country varchar) WITH (kafka_topic='invoices', value_format='AVRO');
 
-SELECT * FRom invoices_stream emit changes;;
+SELECT * FRom invoices_stream emit changes;
 
 CREATE TABLE invoices_state_count WITH (VALUE_FORMAT='AVRO') AS SELECT state,  COUNT() AS numorders FROM invoices_stream WINDOW TUMBLING (size 60 second) GROUP BY state  HAVING COUNT() >= 1;
-SELECT * FRom invoices_state_count;
+SELECT * FRom invoices_state_count emit changes;
 ```
 
 Ctrl +C to exit
