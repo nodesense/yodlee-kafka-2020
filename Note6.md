@@ -48,15 +48,18 @@ DESCRIBE users_stream;
 
 NON_PERSISTED QUERIES [Means, the output/result is not stored into KAfka Brokers]
 
-select userid, regionid, gender from users_stream;
+select userid, regionid, gender from users_stream emit changes;
 
-select userid, regionid, gender from users_stream where gender='FEMALE';
+select userid, regionid, gender from users_stream where gender='FEMALE' emit changes;
 
-select userid, regionid, gender from users_stream where gender='MALE';
+select userid, regionid, gender from users_stream where gender='MALE' emit changes;
+
+```
 
 PERSISTED QUERIES [CREATE STREAM AS ] results written to Kafka
 Will be runnign automatically, need to use TERMINATE command to stop them
 
+```
 CREATE STREAM users_female AS SELECT userid AS userid, regionid FROM users_stream where gender='FEMALE';
 
 CREATE STREAM users_male AS SELECT userid AS userid, regionid FROM users_stream where gender='MALE';
@@ -120,7 +123,7 @@ DROP TABLE  pageviews_region;
  ```
 CREATE STREAM invoices_stream (id varchar, qty int, amount int, customerId varchar, state varchar, country varchar) WITH (kafka_topic='invoices', value_format='AVRO');
 
-SELECT * FRom invoices_stream;
+SELECT * FRom invoices_stream emit changes;;
 
 CREATE TABLE invoices_state_count WITH (VALUE_FORMAT='AVRO') AS SELECT state,  COUNT() AS numorders FROM invoices_stream WINDOW TUMBLING (size 60 second) GROUP BY state  HAVING COUNT() >= 1;
 SELECT * FRom invoices_state_count;
