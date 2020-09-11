@@ -72,8 +72,11 @@ public class InvoiceStreamJoin {
                         .withKeySerde(Serdes.String())
                         .withValueSerde(CustomerAvroSerde));
 
+        // enriched data stream
         final KStream<String, CustomerInvoice> customerOrdersStream = invoiceStream.join(customers,
                 (invoiceId, invoice) -> invoice.getCustomerId().toString(),
+                // enrich the results
+                // take data from invoice, customers and create new entity with combined information
                 (invoice, customer) -> new CustomerInvoice(invoice.getId(), customer.getId(), invoice.getAmount(), customer.getAge(), invoice.getState(), invoice.getCountry(), customer.getGender(), invoice.getInvoiceDate()));
 
         customerOrdersStream.foreach(new ForeachAction<String, CustomerInvoice>() {

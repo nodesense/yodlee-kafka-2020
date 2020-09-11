@@ -25,14 +25,6 @@ public class CustomerProducer {
 
     public static String TOPIC = "customers";
 
-    static Random random = new Random();
-    static int[] categories = {1, 2, 3, 4};
-    static int[] customerIds = {1000, 2000, 3000, 4000, 5000, 6000};
-    static String[] customerNames = {"Krish", "Gayathri", "Nila", "Venkat", "Hari", "Ravi"};
-
-    static String[] stateIds = {"KA", "TN", "KL", "MH", "DL", "AP"};
-
-
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 
