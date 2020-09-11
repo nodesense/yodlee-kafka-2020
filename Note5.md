@@ -14,16 +14,10 @@ Create the file
 ```
 touch stocks.csv
 ```
-
+ 
+ 
 
 Load the source connector / run the connector
-
-```
-confluent local load stock-file-source -d file-source.properties
-
-
-
-```
 
 touch stock-file-source.json
 
@@ -82,12 +76,30 @@ echo "1236,30" >> stocks.csv
 cat stocks.csv
 ```
 
+
+to unload kafka connector running? 
+
+```
+confluent local unload stock-file-source
+```
+
+
+
 # File Sink connector
 
 
+Ensure simpleproducer.java topic should be greetings
+
+```
+public class SimpleProducer {
+
+    public static String TOPIC = "greetings";
+
+}
+```
+
 ```
 touch greetings.txt
-
 
 
 touch greetings-file-sink.json
