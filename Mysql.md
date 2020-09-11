@@ -136,22 +136,34 @@ nano  mysql-product-source.json
   
   To be demonstrated
   
-   
-touch  mysql-product-sink.properties
+```  
+touch  mysql-product-sink.json
 
-nano  mysql-product-sink.properties
+nano  mysql-product-sink.json
 
-name=mysql-product-sink
-connector.class=io.confluent.connect.jdbc.JdbcSinkConnector
-tasks.max=1
-topics=products
-connection.url=jdbc:mysql://localhost:3306/ecommerce?user=team&password=team1234
-auto.create=true
-key.converter=io.confluent.connect.avro.AvroConverter
-key.converter.schema.registry.url=http://k5.nodesense.ai:8081
-value.converter=io.confluent.connect.avro.AvroConverter
-value.converter.schema.registry.url=http://k5.nodesense.ai:8081
+``` 
 
+paste below content
+
+``` 
+
+   {
+   "name": "mysql-product-sink",
+   "config": {
+     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+     "auto.create": true,
+     "tasks.max" : 1,
+     "key.converter": "io.confluent.connect.avro.AvroConverter",
+     "key.converter.schema.registry.url": "http://k17.training.sh:8081",
+     "value.converter": "io.confluent.connect.avro.AvroConverter",
+     "value.converter.schema.registry.url": "http://k17.training.sh:8081",
+     "connection.url": "jdbc:mysql://localhost:3306/ecommerce?user=team&password=team1234",
+     "topics": "products"
+   }
+ }   
+
+``` 
+ 
 
 consume from products topics, write to products table
 
@@ -163,21 +175,28 @@ table.name.format=mst_${topic}
 
 table.name.format=somename_table
 
+```
+confluent local load mysql-product-sink -- -d  mysql-product-sink.json
 
-confluent load mysql-product-sink -d  mysql-product-sink.properties
+confluent local status mysql-product-sink
+```
 
 Check with below command.
 
-kafka-avro-console-producer --broker-list k5.nodesense.ai:9092 --topic products --property value.schema='{"type":"record","name":"product","fields":[{"name":"id","type":"int"},{"name":"name", "type": "string"}, {"name":"price", "type": "int"}]}'  --property schema.registry.url="http://k5.nodesense.ai:8081"
-   
+```
+kafka-avro-console-producer --broker-list k17.training.sh:9092 --topic products --property value.schema='{"type":"record","name":"product","fields":[{"name":"id","type":"int"},{"name":"name", "type": "string"}, {"name":"price", "type": "int"}]}'  --property schema.registry.url="http://k17.training.sh:8081"
+```   
 
 paste below line one after another without new line
 
+```
 {"id": 999, "name": "asus pro", "price": 100}
-
+```
 
 -- in db,
 
+```
 select * from products;
+```
 
 check whether id 999 appears ot not
