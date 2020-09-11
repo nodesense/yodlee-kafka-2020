@@ -1,0 +1,15 @@
+{
+ "namespace": "kafka.workshop.models",
+ "type": "record",
+ "name": "CustomerInvoice",
+ "fields": [
+     {"name": "invoiceId", "type": "string"},
+     {"name": "customerId", "type": "string"},
+     {"name": "amount", "type": "int"},
+     {"name": "age", "type": "int"},
+     {"name": "state", "type": "string"},
+     {"name": "country", "type": "string"},
+     {"name": "gender", "type": "string"},
+     {"name": "invoiceDate", "type": "long", "logicalType": "Timestamp"}
+ ]
+}

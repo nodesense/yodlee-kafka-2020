@@ -12,6 +12,8 @@ package kafka.workshop.invoice;
 
     import java.util.Properties;
     import java.util.Random;
+
+    import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
 //
 
 // kafka-topics --zookeeper k17.training.sh:2181 --create --topic invoices --replication-factor 1 --partitions 3
@@ -40,7 +42,7 @@ public class InvoiceProducer {
         String categoryId = "" + customerIds[random.nextInt(customerIds.length)];
         String stateId = "" + stateIds[random.nextInt(stateIds.length)];
 
-        String customerId = UUID.randomUUID().toString();
+        String customerId = "" + customerIds[random.nextInt(customerIds.length)];
 
 
         String id = UUID.randomUUID().toString();
@@ -73,7 +75,7 @@ public class InvoiceProducer {
 
 
          // Key/Value serializer for Avro format
-        props.put("key.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
+        props.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
 
         // PATH to SCHEMA REGISTRY
@@ -88,7 +90,7 @@ public class InvoiceProducer {
         for (long nEvents = 0; nEvents < events; nEvents++) {
             Invoice invoice = getNextRandomInvoice();
 
-            String key = invoice.getState().toString();
+            String key = invoice.getCustomerId().toString();
             // Invoice ID as key
             ProducerRecord<String, Invoice> record = new ProducerRecord<String, Invoice>(TOPIC,
                     key,

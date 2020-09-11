@@ -1,0 +1,10 @@
+{
+ "name": "stock-file-source",
+ "config": {
+     "connector.class": "FileStreamSource",
+     "tasks.max": "1",
+    "file": "/root/stocks.csv",
+    "topic": "stocks"
+     }
+ }
+

@@ -1,0 +1,11 @@
+{
+ "namespace": "kafka.workshop.models",
+ "type": "record",
+ "name": "Customer",
+ "fields": [
+     {"name": "id", "type": "string"},
+     {"name": "age", "type": "int"},
+     {"name": "name", "type": "string"},
+     {"name": "gender", "type": "string"}
+ ]
+}

@@ -18,7 +18,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 
 public class SimpleProducer {
 
-    public static String TOPIC = "messages";
+    public static String TOPIC = "greetings";
 
 
     public static String[] greetingMessages = new String[] {
