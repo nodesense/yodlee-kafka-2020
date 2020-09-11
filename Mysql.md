@@ -89,11 +89,11 @@ nano  mysql-product-source.json
  Note: the topic shall be <<PREFIX>>+<<TableName>> example: db_products
  
 ``` 
- confluent load mysql-product-source -d mysql-product-source.json
+ confluent local load mysql-product-source -d mysql-product-source.json
  
- confluent status connectors
+ confluent local status connectors
  
- confluent status mysql-product-source
+ confluent local status mysql-product-source
 ``` 
 
 ### Run below on your system or different putty/ssh
