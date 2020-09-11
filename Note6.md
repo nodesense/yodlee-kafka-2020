@@ -88,9 +88,9 @@ select * from pageviews_region_table emit changes;
 ```
 
 ```
-kafka-avro-console-consumer --bootstrap-server k5.nodesense.ai:9092 --topic USERS_FEMALE --from-beginning --property schema.registry.url="http://k5.nodesense.ai:8081"
+kafka-avro-console-consumer --bootstrap-server k17.training.sh:9092 --topic USERS_FEMALE --from-beginning --property schema.registry.url="http://k17.training.sh:8081"
 
-kafka-avro-console-consumer --bootstrap-server k5.nodesense.ai:9092 --topic PAGEVIEWS_REGION_TABLE --from-beginning --property schema.registry.url="http://k5.nodesense.ai:8081"
+kafka-avro-console-consumer --bootstrap-server k17.training.sh:9092 --topic PAGEVIEWS_REGION_TABLE --from-beginning --property schema.registry.url="http://k17.training.sh:8081"
 ```
 
 List the persisted queries
@@ -127,6 +127,12 @@ SELECT * FRom invoices_stream emit changes;
 
 CREATE TABLE invoices_state_count WITH (VALUE_FORMAT='AVRO') AS SELECT state,  COUNT() AS numorders FROM invoices_stream WINDOW TUMBLING (size 60 second) GROUP BY state  HAVING COUNT() >= 1;
 SELECT * FRom invoices_state_count emit changes;
+```
+
+
+```
+kafka-avro-console-consumer --bootstrap-server k17.training.sh:9092 --topic INVOICES_STATE_COUNT  --from-beginning --property schema.registry.url="http://k17.training.sh:8081"
+
 ```
 
 Ctrl +C to exit
