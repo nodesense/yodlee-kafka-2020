@@ -75,7 +75,7 @@ public class InvoiceProducer {
 
 
          // Key/Value serializer for Avro format
-        props.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
 
         // PATH to SCHEMA REGISTRY

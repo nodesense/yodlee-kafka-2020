@@ -131,6 +131,9 @@ confluent local load greetings-file-sink -- -d greetings-file-sink.json
 confluent local status greetings-file-sink
 ```
 
+Run the SimpleProducer.java
+
+
 ```
 cat greetings.txt
 ```
@@ -172,9 +175,8 @@ paste below content
      "tasks.max": "1",
     "file": "/root/invoices.txt",
     "topics": "invoices",
-    "key.converter": "io.confluent.connect.avro.AvroConverter",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
-    "key.converter.schema.registry.url": "http://k17.training.sh:8081",
     "value.converter.schema.registry.url": "http://k17.training.sh:8081"
      }
  }
